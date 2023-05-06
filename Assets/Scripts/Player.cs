@@ -24,37 +24,21 @@ public class Player : MonoBehaviour
         float playerRadius = .7f;
         float playerHeight = 2f;
         var position = transform.position;
-        bool canMove = !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius, moveDirection,
-            moveDistance);
 
+        var (canMoveToX, moveDirectionToX) =
+            CheckCanMoveTowardsX(moveDirection, position, moveDistance, playerHeight, playerRadius);
 
-        if (!canMove)
+        if (canMoveToX)
         {
-            var (canMoveToX, moveDirectionToX) =
-                TryMoveTowardsX(moveDirection, position, moveDistance, playerHeight, playerRadius);
-
-            if (canMoveToX)
-            {
-                canMove = true;
-                moveDirection = moveDirectionToX;
-            }
-            else
-            {
-                var (canMoveToZ, moveDirectionToZ) =
-                    TryMoveTowardsZ(moveDirection, position, moveDistance, playerHeight, playerRadius);
-
-                if (canMoveToZ)
-                {
-                    canMove = true;
-                    moveDirection = moveDirectionToZ;
-                }
-            }
+            transform.position += moveDirectionToX * moveDistance;
         }
 
-        if (canMove)
+        var (canMoveToZ, moveDirectionToZ) =
+            CheckCanMoveTowardsZ(moveDirection, position, moveDistance, playerHeight, playerRadius);
+
+        if (canMoveToZ)
         {
-            // Moving direction
-            transform.position += moveDirection * moveDistance;
+            transform.position += moveDirectionToZ * moveDistance;
         }
 
         // Face direction
@@ -63,7 +47,7 @@ public class Player : MonoBehaviour
         this.isWalking = moveDirection != Vector3.zero;
     }
 
-    private static (bool, Vector3) TryMoveTowardsX(Vector3 moveDirection, Vector3 position, float moveDistance,
+    private static (bool, Vector3) CheckCanMoveTowardsX(Vector3 moveDirection, Vector3 position, float moveDistance,
         float playerHeight, float playerRadius)
     {
         // Try move towards X
@@ -75,7 +59,7 @@ public class Player : MonoBehaviour
         return (canMoveToX, moveDirectionToX);
     }
 
-    private static (bool, Vector3) TryMoveTowardsZ(
+    private static (bool, Vector3) CheckCanMoveTowardsZ(
         Vector3 moveDirection, Vector3 position, float moveDistance,
         float playerHeight, float playerRadius
     )
