@@ -27,13 +27,11 @@ public class Player : MonoBehaviour
         bool canMove = !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius, moveDirection,
             moveDistance);
 
+
         if (!canMove)
         {
-            // Try move towards X
-            // As we are reassigning to a new vector3, the normalized y is gone, so we need to normalized it again
-            Vector3 moveDirectionToX = (Vector3.right * moveDirection.x).normalized;
-            bool canMoveToX = !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius,
-                moveDirectionToX, moveDistance);
+            var (canMoveToX, moveDirectionToX) =
+                TryMoveTowardsX(moveDirection, position, moveDistance, playerHeight, playerRadius);
 
             if (canMoveToX)
             {
@@ -42,10 +40,8 @@ public class Player : MonoBehaviour
             }
             else
             {
-                // Try move towards Z
-                Vector3 moveDirectionToZ = (Vector3.forward * moveDirection.z).normalized;
-                bool canMoveToZ = !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius,
-                    moveDirectionToZ, moveDistance);
+                var (canMoveToZ, moveDirectionToZ) =
+                    TryMoveTowardsZ(moveDirection, position, moveDistance, playerHeight, playerRadius);
 
                 if (canMoveToZ)
                 {
@@ -65,6 +61,31 @@ public class Player : MonoBehaviour
         transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * this.rotateSpeed);
 
         this.isWalking = moveDirection != Vector3.zero;
+    }
+
+    private static (bool, Vector3) TryMoveTowardsX(Vector3 moveDirection, Vector3 position, float moveDistance,
+        float playerHeight, float playerRadius)
+    {
+        // Try move towards X
+        // As we are reassigning to a new vector3, the normalized y is gone, so we need to normalized it again
+        Vector3 moveDirectionToX = (Vector3.right * moveDirection.x).normalized;
+        bool canMoveToX = !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius,
+            moveDirectionToX, moveDistance);
+
+        return (canMoveToX, moveDirectionToX);
+    }
+
+    private static (bool, Vector3) TryMoveTowardsZ(
+        Vector3 moveDirection, Vector3 position, float moveDistance,
+        float playerHeight, float playerRadius
+    )
+    {
+        // Try move towards Z
+        Vector3 moveDirectionToZ = (Vector3.forward * moveDirection.z).normalized;
+        bool canMoveToZ = !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius,
+            moveDirectionToZ, moveDistance);
+
+        return (canMoveToZ, moveDirectionToZ);
     }
 
     public bool IsWalking()
