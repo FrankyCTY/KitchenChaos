@@ -7,15 +7,48 @@ public class Player : MonoBehaviour
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private float rotateSpeed = 10f;
     [SerializeField] private GameInput gameInput;
+    [SerializeField] private LayerMask countersLayerMask;
 
     private bool isWalking;
+    private Vector3 lastInteractDirection;
 
     // Everything here by default relate to each Frame, but:
     // 1. We use DeltaTime to be frame rate independent
     // 2. Accumulate changes to the attached game object by using += from each frame update
     private void Update()
     {
-        var inputVector = gameInput.GetMovementVectorNormalized();
+        this.HandleMovement();
+        this.HandleInteractions();
+    }
+
+    private void HandleInteractions()
+    {
+        Vector3 inputVector = gameInput.GetMovementVectorNormalized();
+        Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
+        if (moveDirection != Vector3.zero)
+        {
+            // Cache old direction to ensure even just facing the object with physics collider can still trigger event (etc. clear counter interaction)
+            lastInteractDirection = moveDirection;
+        }
+        float interactDistance = 2f;
+        
+        if(Physics.Raycast(transform.position, lastInteractDirection, out RaycastHit raycastHit, interactDistance, countersLayerMask))
+        {
+            if(raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
+            {
+                // Has ClearCounter
+                clearCounter.Interact();
+            };
+        } else
+        {
+            Debug.Log("-");
+        }
+    }
+
+    private void HandleMovement()
+    {
+        Vector3 inputVector = gameInput.GetMovementVectorNormalized();
+        
 
         // x, y, z -> only getting direction for current update exp: (x: 1f, y: 0, z: 0)
         Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
@@ -40,7 +73,7 @@ public class Player : MonoBehaviour
         {
             transform.position += moveDirectionToZ * moveDistance;
         }
-
+        
         // Face direction
         transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * this.rotateSpeed);
 
