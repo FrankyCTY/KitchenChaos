@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClearCounter : MonoBehaviour
+public class ClearCounter : MonoBehaviour, IKitchenObjectParent
 {
     [SerializeField] private KitchenObjectSO _kitchenObjectSo;
     [SerializeField] private Transform counterTopPoint;
@@ -17,22 +17,24 @@ public class ClearCounter : MonoBehaviour
         {
             if (kitchenObject != null)
             {
-                kitchenObject.SetClearCounter(this.secondClearCounter);
+                kitchenObject.SetKitchenObjectParent(this.secondClearCounter);
                 this.clearKitchenObject();
             }
         }
     }
 
-    public void Interact()
+    public void Interact(Player player)
     {
         if (this.kitchenObject == null)
         {
             Transform kitchenObjectTransform = Instantiate(_kitchenObjectSo.prefab, counterTopPoint);
-            kitchenObjectTransform.GetComponent<KitchenObject>().SetClearCounter(this);
+            kitchenObjectTransform.GetComponent<KitchenObject>().SetKitchenObjectParent(this);
         }
         else
         {
-            Debug.Log(kitchenObject.GetClearCounter());
+            // Give the object to the player
+            this.kitchenObject.SetKitchenObjectParent(player);
+            Debug.Log(kitchenObject.GetKitchenObjectParent());
         }
     }
 
@@ -56,7 +58,7 @@ public class ClearCounter : MonoBehaviour
         this.kitchenObject = null;
         // Clear the rendered kitchen object on the counter top point
         // Potentially move to a dedicated counterTopPoint script
-        this.ClearChildrenObjectsInCountertopPoint();
+        this.ClearChildrenObjectsInCounterTopPoint();
     }
 
     public bool HasKitchenObject()
@@ -64,7 +66,7 @@ public class ClearCounter : MonoBehaviour
         return this.kitchenObject != null;
     }
 
-    private void ClearChildrenObjectsInCountertopPoint()
+    private void ClearChildrenObjectsInCounterTopPoint()
     {
         for (int i = 0; i < this.counterTopPoint.childCount; i++)
         {

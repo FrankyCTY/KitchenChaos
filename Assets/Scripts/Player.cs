@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IKitchenObjectParent
 {
     public static Player Instance { get; private set; }
 
@@ -18,10 +19,12 @@ public class Player : MonoBehaviour
     [SerializeField] private float rotateSpeed = 10f;
     [SerializeField] private GameInput gameInput;
     [SerializeField] private LayerMask countersLayerMask;
+    [SerializeField] private Transform kitchenObjectHoldingPoint;
 
     private bool isWalking;
     private Vector3 lastInteractDirection;
     private ClearCounter selectedCounter;
+    private KitchenObject kitchenObject;
 
     private void Awake()
     {
@@ -42,7 +45,7 @@ public class Player : MonoBehaviour
     {
         if (this.selectedCounter != null)
         {
-            this.selectedCounter.Interact();
+            this.selectedCounter.Interact(this);
         }
     }
 
@@ -181,5 +184,45 @@ public class Player : MonoBehaviour
         {
             selectedCounter = this.selectedCounter
         });
+    }
+
+    public Transform GetKitchenObjectFollowTransform()
+    {
+        return this.kitchenObjectHoldingPoint;
+    }
+
+    public void SetKitchenObject(KitchenObject kitchenObject)
+    {
+        this.kitchenObject = kitchenObject;
+    }
+
+    public KitchenObject GetKitchenObject()
+    {
+        return this.kitchenObject;
+    }
+
+    public void clearKitchenObject()
+    {
+        this.kitchenObject = null;
+        // Clear the rendered kitchen object on the counter top point
+        // Potentially move to a dedicated counterTopPoint script
+        this.ClearChildrenObjectsInCounterTopPoint();
+    }
+
+    public bool HasKitchenObject()
+    {
+        return this.kitchenObject != null;
+    }
+    
+    private void ClearChildrenObjectsInCounterTopPoint()
+    {
+        for (int i = 0; i < this.kitchenObjectHoldingPoint.childCount; i++)
+        {
+            // Get the child at index i
+            Transform child = this.kitchenObjectHoldingPoint.GetChild(i);
+
+            // Destroy the child object
+            GameObject.Destroy(child.gameObject);
+        }
     }
 }
