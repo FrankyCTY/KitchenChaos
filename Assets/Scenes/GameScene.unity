@@ -867,6 +867,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2261921088808906606, guid: 7b74bb3b90d114010a189b9d0828dd9f,
+        type: 3}
+      propertyPath: _kitchenObjectSo
+      value: 
+      objectReference: {fileID: 11400000, guid: dd53016e928c6483f88369a6b79010e7,
+        type: 2}
     - target: {fileID: 2541967832316530404, guid: 7b74bb3b90d114010a189b9d0828dd9f,
         type: 3}
       propertyPath: m_RootOrder
@@ -926,6 +932,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ClearCounter (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7808043294506530607, guid: 7b74bb3b90d114010a189b9d0828dd9f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1149,6 +1160,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1186535396 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2261921088808906606, guid: 7b74bb3b90d114010a189b9d0828dd9f,
+    type: 3}
+  m_PrefabInstance: {fileID: 714548423}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 059e550d435e44739a866b82604d29d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1256189612
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1157,6 +1180,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2261921088808906606, guid: 7b74bb3b90d114010a189b9d0828dd9f,
+        type: 3}
+      propertyPath: isTesting
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2261921088808906606, guid: 7b74bb3b90d114010a189b9d0828dd9f,
+        type: 3}
+      propertyPath: secondClearCounter
+      value: 
+      objectReference: {fileID: 1186535396}
     - target: {fileID: 2541967832316530404, guid: 7b74bb3b90d114010a189b9d0828dd9f,
         type: 3}
       propertyPath: m_RootOrder
