@@ -1,16 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class KitchenObject : MonoBehaviour
 {
-    [SerializeField] private KitchenObjectSO _kitchenObjectSo;
+    [SerializeField] private KitchenObjectSO kitchenObjectSo;
 
     private IKitchenObjectParent kitchenObjectParent;
 
     public KitchenObjectSO GetKitchenObjectSO()
     {
-        return this._kitchenObjectSo;
+        return this.kitchenObjectSo;
     }
 
     public void SetKitchenObjectParent(IKitchenObjectParent kitchenObjectParent)
