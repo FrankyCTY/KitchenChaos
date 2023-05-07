@@ -33,7 +33,6 @@ public class KitchenObject : MonoBehaviour
 
     private void positionThisKitchenObject(IKitchenObjectParent kitchenObjectParent)
     {
-        Debug.Log($"---------positionThisKitchenObject {kitchenObjectParent}");
         transform.parent = kitchenObjectParent.GetKitchenObjectFollowTransform();
         transform.localPosition = Vector3.zero;
     }
