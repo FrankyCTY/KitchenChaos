@@ -16,21 +16,21 @@ public class SelectedCounterVisual : MonoBehaviour
     {
         if (e.selectedCounter == this.clearCounter)
         {
-            Debug.Log("Ready to SHOW");
             this.Show();
         }
-
-        Debug.Log("Ready to HIDE");
-        this.Hide();
+        else
+        {
+            this.Hide();
+        }
     }
 
     private void Show()
     {
-        visualGameObject.SetActive(true);
+        this.visualGameObject.SetActive(true);
     }
 
     private void Hide()
     {
-        visualGameObject.SetActive(false);
+        this.visualGameObject.SetActive(false);
     }
 }

@@ -72,6 +72,7 @@ public class Player : MonoBehaviour
             if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
             {
                 // Set selected counter for visual effect on the selected counter
+                // Debug.Log($"Detected counter direction {clearCounter.name}");
                 this.SetSelectedCounter(clearCounter);
             }
             else
