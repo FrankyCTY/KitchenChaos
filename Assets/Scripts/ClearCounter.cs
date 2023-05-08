@@ -34,7 +34,7 @@ public class ClearCounter : BaseCounter
                 Debug.Log("Can I pick it up?");
                 // Player is not carrying anything
                 GetKitchenObject().SetKitchenObjectParent(player);
-                this.clearKitchenObject();
+                clearKitchenObject();
             }
         }
     }

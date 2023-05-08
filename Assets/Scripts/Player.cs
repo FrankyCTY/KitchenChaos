@@ -72,16 +72,11 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         if (Physics.Raycast(transform.position, lastInteractDirection, out RaycastHit raycastHit, interactDistance,
                 countersLayerMask))
         {
-            if (raycastHit.transform.TryGetComponent(out BaseCounter baseCounter))
-            {
-                // Set selected counter for visual effect on the selected counter
-                // Debug.Log($"Detected counter direction {clearCounter.name}");
-                this.SetSelectedCounter(baseCounter);
-            }
-            else
-            {
-                this.SetSelectedCounter(null);
-            }
+            // Set selected counter for visual effect on the selected counter
+            // Debug.Log($"Detected counter direction {clearCounter.name}");
+            this.SetSelectedCounter(raycastHit.transform.TryGetComponent(out BaseCounter baseCounter)
+                ? baseCounter
+                : null);
         }
         else
         {
