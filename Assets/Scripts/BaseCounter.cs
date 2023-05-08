@@ -13,6 +13,11 @@ public class BaseCounter : MonoBehaviour, IKitchenObjectParent
         Debug.LogError("BaseCounter.Interact();");
     }
     
+    public virtual void InteractAlternate(Player player)
+    {
+        Debug.LogError("BaseCounter.InteractAlternate();");
+    }
+    
     public Transform GetKitchenObjectFollowTransform()
     {
         return this.counterTopPoint;
@@ -31,9 +36,9 @@ public class BaseCounter : MonoBehaviour, IKitchenObjectParent
     public void clearKitchenObject()
     {
         this.kitchenObject = null;
-        // Clear the rendered kitchen object on the counter top point
-        // Potentially move to a dedicated counterTopPoint script
-        this.ClearChildrenObjectsInCounterTopPoint();
+        // // Clear the rendered kitchen object on the counter top point
+        // // Potentially move to a dedicated counterTopPoint script
+        // this.ClearChildrenObjectsInCounterTopPoint();
     }
 
     public bool HasKitchenObject()
@@ -41,6 +46,7 @@ public class BaseCounter : MonoBehaviour, IKitchenObjectParent
         return this.kitchenObject != null;
     }
 
+    // Will be obsolete as we use `DestroySelf()` in the KitchenObject MonoBehavior class
     private void ClearChildrenObjectsInCounterTopPoint()
     {
         for (int i = 0; i < this.counterTopPoint.childCount; i++)
