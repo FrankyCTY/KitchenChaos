@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 public class GameInput : MonoBehaviour
 {
     public event EventHandler HandleInteractAction;
-    public event EventHandler HandlerInteractAlternateAcion;
+    public event EventHandler HandlerInteractAlternateAction;
     private PlayerInputActions playerInputActions;
 
     private void Awake()
@@ -21,12 +21,12 @@ public class GameInput : MonoBehaviour
 
     private void Interact_performed(InputAction.CallbackContext obj)
     {
-        this.HandleInteractAction?.Invoke(this, EventArgs.Empty);
+        HandleInteractAction?.Invoke(this, EventArgs.Empty);
     }
 
     private void InteractAlternate_performed(InputAction.CallbackContext obj)
     {
-        this.HandlerInteractAlternateAcion?.Invoke(this, EventArgs.Empty);
+        HandlerInteractAlternateAction?.Invoke(this, EventArgs.Empty);
     }
 
     public Vector2 GetMovementVectorNormalized()

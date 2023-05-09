@@ -39,7 +39,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     private void Start()
     {
         gameInput.HandleInteractAction += GameInput_HandleInteraction;
-        gameInput.HandlerInteractAlternateAcion += GameInput_HandleInteractionAlternate;
+        gameInput.HandlerInteractAlternateAction += GameInput_HandleInteractionAlternate;
     }
 
     private void GameInput_HandleInteractionAlternate(object sender, EventArgs e)

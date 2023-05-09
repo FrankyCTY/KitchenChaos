@@ -50,6 +50,7 @@ public class KitchenObject : MonoBehaviour
     public static KitchenObject SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent
         parent)
     {
+        Debug.Log("KitchenObject: SpawnKitchenObject: Ready to spawn new kitchen object and position to new parent");
         Transform kitchenObjectTransform = Instantiate(kitchenObjectSO.prefab);
         KitchenObject kitchenObject = kitchenObjectTransform.GetComponent<KitchenObject>();
         kitchenObject.SetParent(parent);

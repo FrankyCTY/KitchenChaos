@@ -2,11 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CuttingCounter : BaseCounter
 {
-    [SerializeField] private CuttingRecipeSO[] cuttingKitchenObjectSOArray;
-    
+    [FormerlySerializedAs("cuttingKitchenObjectSOArray")] [SerializeField]
+    private CuttingRecipeSO[] cuttingRecipeSOArray;
+
+    private int cuttinProgress;
+
     public override void Interact(Player player)
     {
         if (!HasKitchenObject())
@@ -15,10 +19,12 @@ public class CuttingCounter : BaseCounter
             if (player.HasKitchenObject())
             {
                 // Check if from obj is valid and can be transformed via recipe
-                if (HasRecipeWithFromObj(player.GetKitchenObject().GetKitchenObjectSO()))
+                var kitchenObjectOnPlayerHand = player.GetKitchenObject();
+                if (HasMatchingRecipe(kitchenObjectOnPlayerHand.GetKitchenObjectSO()))
                 {
-                    player.GetKitchenObject().SetParent(this);
-                    player.clearKitchenObject();
+                    playerPutObjectToThisCounter(player, kitchenObjectOnPlayerHand);
+
+                    cuttinProgress = 0;
                 }
                 // If no valid recipe found, skip.
             }
@@ -37,8 +43,7 @@ public class CuttingCounter : BaseCounter
             else
             {
                 // Player is not carrying anything
-                GetKitchenObject().SetParent(player);
-                clearKitchenObject();
+                playerPickUpObjectOnThisCounter(player);
             }
         }
     }
@@ -47,27 +52,28 @@ public class CuttingCounter : BaseCounter
     // Then interact alternate triggered to cut the kitchen object
     public override void InteractAlternate(Player player)
     {
-        // Only start cuttiny if:
+        // Only start cutting if:
         // 1. The cutting counter has a kitchen object
         // 2. The kitchen object has a corresponding cutting recipe
-        if (HasKitchenObject() && HasRecipeWithFromObj(GetKitchenObject().GetKitchenObjectSO()))
+        if (HasKitchenObject() && HasMatchingRecipe(GetKitchenObject().GetKitchenObjectSO()))
         {
+            cuttinProgress++;
             // There is a kitchen object here
             // Destroy current kitchen object
             // Then replace it with the cut kitchen object
             Debug.Log(GetKitchenObject());
-            KitchenObjectSO resultingKitchenObjectSo = GetObjectWithRecipe(GetKitchenObject().GetKitchenObjectSO());
+            KitchenObjectSO cuttingResult = GetObjectWithRecipe(GetKitchenObject().GetKitchenObjectSO());
             GetKitchenObject().DestroySelf();
-            KitchenObject.SpawnKitchenObject(resultingKitchenObjectSo, this);
+            KitchenObject.SpawnKitchenObject(cuttingResult, this);
         }
         // Do nothing, as the cutting counter does not have any kitchen object 
     }
 
-    private bool HasRecipeWithFromObj(KitchenObjectSO fromObj)
+    private bool HasMatchingRecipe(KitchenObjectSO forInputObject)
     {
-        foreach (var cuttingKitchenObj in cuttingKitchenObjectSOArray)
+        foreach (var cuttingRecipeSO in cuttingRecipeSOArray)
         {
-            if (cuttingKitchenObj.fromObject == fromObj)
+            if (cuttingRecipeSO.fromObject == forInputObject)
             {
                 return true;
             }
@@ -78,15 +84,30 @@ public class CuttingCounter : BaseCounter
 
     private KitchenObjectSO GetObjectWithRecipe(KitchenObjectSO fromObject)
     {
-        foreach (var cuttingKitchenObj in cuttingKitchenObjectSOArray)
+        foreach (var cuttingRecipeSO in cuttingRecipeSOArray)
         {
-            if (cuttingKitchenObj.fromObject == fromObject)
+            if (cuttingRecipeSO.fromObject == fromObject)
             {
-                return cuttingKitchenObj.toObject;
+                return cuttingRecipeSO.toObject;
             }
         }
 
-        Debug.LogError($"GetObjectWithRecipe: Can't find any matching cuttingKitchenObj for {fromObject}, returning null and might cause exception");
+        Debug.LogError(
+            $"GetObjectWithRecipe: Can't find any matching cuttingKitchenObj for {fromObject}, returning null and might cause exception");
         return null;
+    }
+
+    private void playerPutObjectToThisCounter(Player player, KitchenObject kitchenObject)
+    {
+        Debug.Log(
+            "CuttingCounter: Interact: Counter has no object AND player is carrying a kitchen object, put object to the counter");
+        kitchenObject.SetParent(this);
+        player.clearKitchenObject();
+    }
+
+    private void playerPickUpObjectOnThisCounter(Player player)
+    {
+        GetKitchenObject().SetParent(player);
+        clearKitchenObject();
     }
 }
