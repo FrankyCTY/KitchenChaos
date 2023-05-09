@@ -7,50 +7,52 @@ public class KitchenObject : MonoBehaviour
 {
     [SerializeField] private KitchenObjectSO kitchenObjectSo;
 
-    private IKitchenObjectParent kitchenObjectParent;
+    private IKitchenObjectParent parent;
 
     public KitchenObjectSO GetKitchenObjectSO()
     {
         return this.kitchenObjectSo;
     }
 
-    public void SetKitchenObjectParent(IKitchenObjectParent kitchenObjectParent)
+    public void SetParent(IKitchenObjectParent parent)
     {
-        this.kitchenObjectParent = kitchenObjectParent;
-        if (kitchenObjectParent.HasKitchenObject())
+        // If new parent already have have a kitchen object, we need to clear it
+        if (parent.HasKitchenObject())
         {
             Debug.LogError("Parent already has a kitchen object, will try to replace the kitchen object.");
-            kitchenObjectParent.clearKitchenObject();
+            parent.clearKitchenObject();
         }
 
-        kitchenObjectParent.SetKitchenObject(this);
-        this.positionThisKitchenObject(kitchenObjectParent);
+        parent.SetKitchenObject(this);
+        this.parent = parent;
+        
+        positionSelf(parent);
     }
 
-    public IKitchenObjectParent GetKitchenObjectParent()
+    public IKitchenObjectParent GetParent()
     {
-        return this.kitchenObjectParent;
+        return this.parent;
     }
 
-    private void positionThisKitchenObject(IKitchenObjectParent kitchenObjectParent)
+    private void positionSelf(IKitchenObjectParent parent)
     {
-        transform.parent = kitchenObjectParent.GetKitchenObjectFollowTransform();
-        Debug.Log(kitchenObjectParent);
+        transform.parent = parent.GetKitchenObjectHoldingPointTransform();
+        Debug.Log($"KitchenObject: Ready to position myself to parent {parent}");
         transform.localPosition = Vector3.zero;
     }
 
     public void DestroySelf()
     {
-        kitchenObjectParent.clearKitchenObject();
+        parent.clearKitchenObject();
         Destroy(gameObject);
     }
 
     public static KitchenObject SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent
-        kitchenObjectParent)
+        parent)
     {
         Transform kitchenObjectTransform = Instantiate(kitchenObjectSO.prefab);
         KitchenObject kitchenObject = kitchenObjectTransform.GetComponent<KitchenObject>();
-        kitchenObject.SetKitchenObjectParent(kitchenObjectParent);
+        kitchenObject.SetParent(parent);
 
         return kitchenObject;
     }

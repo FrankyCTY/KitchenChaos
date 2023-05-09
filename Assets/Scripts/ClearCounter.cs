@@ -37,15 +37,15 @@ public class ClearCounter : BaseCounter
     private void playerPickUpObjectOnCounter(Player player)
     {
         Debug.Log("Object on the counter AND the Player is not carrying anything, pick it up.");
-        GetKitchenObject().SetKitchenObjectParent(player);
+        GetKitchenObject().SetParent(player);
         clearKitchenObject();
     }
 
     private void playerPutObjectOnCounter(Player player)
     {
         Debug.Log("Nothing on the counter AND the player is carrying an object, put it on the counter.");
-        var objectOnPlayerHand = player.GetKitchenObject();
-        objectOnPlayerHand.SetKitchenObjectParent(this);
+        var kitchenObjectOnHand = player.GetKitchenObject();
+        kitchenObjectOnHand.SetParent(this);
 
         player.clearKitchenObject();
     }

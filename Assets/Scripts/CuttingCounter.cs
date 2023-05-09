@@ -17,7 +17,7 @@ public class CuttingCounter : BaseCounter
                 // Check if from obj is valid and can be transformed via recipe
                 if (HasRecipeWithFromObj(player.GetKitchenObject().GetKitchenObjectSO()))
                 {
-                    player.GetKitchenObject().SetKitchenObjectParent(this);
+                    player.GetKitchenObject().SetParent(this);
                     player.clearKitchenObject();
                 }
                 // If no valid recipe found, skip.
@@ -37,7 +37,7 @@ public class CuttingCounter : BaseCounter
             else
             {
                 // Player is not carrying anything
-                GetKitchenObject().SetKitchenObjectParent(player);
+                GetKitchenObject().SetParent(player);
                 clearKitchenObject();
             }
         }

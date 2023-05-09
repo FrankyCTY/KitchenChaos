@@ -18,7 +18,7 @@ public class BaseCounter : MonoBehaviour, IKitchenObjectParent
         Debug.LogError("BaseCounter.InteractAlternate();");
     }
     
-    public Transform GetKitchenObjectFollowTransform()
+    public Transform GetKitchenObjectHoldingPointTransform()
     {
         return this.counterTopPoint;
     }

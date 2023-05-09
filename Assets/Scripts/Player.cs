@@ -190,7 +190,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         });
     }
 
-    public Transform GetKitchenObjectFollowTransform()
+    public Transform GetKitchenObjectHoldingPointTransform()
     {
         return this.kitchenObjectHoldingPoint;
     }
