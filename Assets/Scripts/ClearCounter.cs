@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClearCounter : BaseCounter 
+public class ClearCounter : BaseCounter
 {
     [SerializeField] private KitchenObjectSO kitchenObjectSo;
 
@@ -13,8 +13,7 @@ public class ClearCounter : BaseCounter
             // There is no Kitchen object here
             if (player.HasKitchenObject())
             {
-                player.GetKitchenObject().SetKitchenObjectParent(this);
-                player.clearKitchenObject();
+                playerPutObjectOnCounter(player);
             }
             else
             {
@@ -23,19 +22,31 @@ public class ClearCounter : BaseCounter
         }
         else
         {
-            Debug.Log("HIHIHIHI there is it!");
             // There is already a Kitchen Object here
             if (player.HasKitchenObject())
             {
-                // Player is carrying something
+                // Object on the counter BUT the Player is carrying something, do nothing
             }
             else
             {
-                Debug.Log("Can I pick it up?");
-                // Player is not carrying anything
-                GetKitchenObject().SetKitchenObjectParent(player);
-                clearKitchenObject();
+                playerPickUpObjectOnCounter(player);
             }
         }
+    }
+
+    private void playerPickUpObjectOnCounter(Player player)
+    {
+        Debug.Log("Object on the counter AND the Player is not carrying anything, pick it up.");
+        GetKitchenObject().SetKitchenObjectParent(player);
+        clearKitchenObject();
+    }
+
+    private void playerPutObjectOnCounter(Player player)
+    {
+        Debug.Log("Nothing on the counter AND the player is carrying an object, put it on the counter.");
+        var objectOnPlayerHand = player.GetKitchenObject();
+        objectOnPlayerHand.SetKitchenObjectParent(this);
+
+        player.clearKitchenObject();
     }
 }
