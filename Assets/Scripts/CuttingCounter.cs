@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 public class CuttingCounter : BaseCounter
 {
     public event EventHandler<HandleProgressChangedEventArgs> HandleProgressChanged;
-    public event EventHandler HandleCuttingTriggered;
+    public event EventHandler HandleCut;
 
     public class HandleProgressChangedEventArgs : EventArgs
     {
@@ -35,7 +35,7 @@ public class CuttingCounter : BaseCounter
 
                     cuttingProgress = 0;
 
-                    var objectOnThisCounter = GetKitchenObject().GetKitchenObjectSO();
+                    var objectOnThisCounter = GetObjectSoOnThisCounter();
                     var cuttingRecipeSO = GetCuttingRecipeFromObject(objectOnThisCounter);
 
                     HandleProgressChanged?.Invoke(this, new HandleProgressChangedEventArgs()
@@ -72,30 +72,57 @@ public class CuttingCounter : BaseCounter
         // Only start cutting if:
         // 1. The cutting counter has a kitchen object
         // 2. The kitchen object has a corresponding cutting recipe
-        var objectOnThisCounter = GetKitchenObject()?.GetKitchenObjectSO();
+        var objectOnThisCounter = GetObjectSoOnThisCounter();
         if (HasKitchenObject() && HasMatchingRecipe(objectOnThisCounter))
         {
             cuttingProgress++;
 
             var cuttingRecipeSO = GetCuttingRecipeFromObject(objectOnThisCounter);
+            DispatchCuttingEvents(cuttingRecipeSO);
 
-            HandleCuttingTriggered?.Invoke(this,EventArgs.Empty);
+            if (HasCutCompleted(cuttingRecipeSO))
+            {
+                ReplaceObjOnCounterWithCutObject();
+            }
+        }
+        // Do nothing, as the cutting counter does not have any kitchen object 
+    }
+
+    private KitchenObjectSO GetObjectSoOnThisCounter()
+    {
+        var result = GetKitchenObject()?.GetKitchenObjectSO();
+
+        if (result is not null)
+        {
+            return result;
+        }
+
+        return null;
+    }
+
+    private void DispatchCuttingEvents(CuttingRecipeSO cuttingRecipeSO)
+    {
+            HandleCut?.Invoke(this,EventArgs.Empty);
             HandleProgressChanged?.Invoke(this, new HandleProgressChangedEventArgs()
             {
                 progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax
             });
-            if (cuttingProgress >= cuttingRecipeSO.cuttingProgressMax)
-            {
-                // There is a kitchen object here
-                // Destroy current kitchen object
-                // Then replace it with the cut kitchen object
-                Debug.Log(GetKitchenObject());
-                KitchenObjectSO cuttingResult = ToCutKitchenObject(GetKitchenObject().GetKitchenObjectSO());
-                GetKitchenObject().DestroySelf();
-                KitchenObject.SpawnKitchenObject(cuttingResult, this);
-            }
-        }
-        // Do nothing, as the cutting counter does not have any kitchen object 
+    }
+
+    private bool HasCutCompleted(CuttingRecipeSO cuttingRecipeSO)
+    {
+        return cuttingProgress >= cuttingRecipeSO.cuttingProgressMax;
+    }
+    
+    private void ReplaceObjOnCounterWithCutObject()
+    {
+        // There is a kitchen object here
+        // Destroy current kitchen object
+        // Then replace it with the cut kitchen object
+        Debug.Log(GetKitchenObject());
+        KitchenObjectSO cuttingResult = ToCutKitchenObject(GetKitchenObject().GetKitchenObjectSO());
+        GetKitchenObject().DestroySelf();
+        KitchenObject.SpawnKitchenObject(cuttingResult, this);
     }
 
     private bool HasMatchingRecipe(KitchenObjectSO forInputObject)

@@ -17,10 +17,10 @@ public class CuttingCounterVisual : MonoBehaviour
 
     private void Start()
     {
-        this.cuttingCounter.HandleCuttingTriggered += CuttingCounter_HandleCuttingTriggered;
+        this.cuttingCounter.HandleCut += CuttingCounter_HandleCut;
     }
 
-    private void CuttingCounter_HandleCuttingTriggered(object sender, EventArgs e)
+    private void CuttingCounter_HandleCut(object sender, EventArgs e)
     {
         this.animator.SetTrigger(CUT);
     }
