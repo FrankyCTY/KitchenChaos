@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,10 +7,17 @@ using UnityEngine.Serialization;
 
 public class CuttingCounter : BaseCounter
 {
+    public event EventHandler<HandleProgressChangedEventArgs> HandleProgressChanged;
+
+    public class HandleProgressChangedEventArgs : EventArgs
+    {
+        public float progressNormalized;
+    }
+
     [FormerlySerializedAs("cuttingKitchenObjectSOArray")] [SerializeField]
     private CuttingRecipeSO[] cuttingRecipeSOArray;
 
-    private int cuttinProgress;
+    private int cuttingProgress;
 
     public override void Interact(Player player)
     {
@@ -24,7 +32,15 @@ public class CuttingCounter : BaseCounter
                 {
                     playerPutObjectToThisCounter(player, kitchenObjectOnPlayerHand);
 
-                    cuttinProgress = 0;
+                    cuttingProgress = 0;
+
+                    var objectOnThisCounter = GetKitchenObject().GetKitchenObjectSO();
+                    var cuttingRecipeSO = GetCuttingRecipeFromObject(objectOnThisCounter);
+
+                    HandleProgressChanged?.Invoke(this, new HandleProgressChangedEventArgs()
+                    {
+                        progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax
+                    });
                 }
                 // If no valid recipe found, skip.
             }
@@ -58,10 +74,15 @@ public class CuttingCounter : BaseCounter
         var objectOnThisCounter = GetKitchenObject()?.GetKitchenObjectSO();
         if (HasKitchenObject() && HasMatchingRecipe(objectOnThisCounter))
         {
-            cuttinProgress++;
+            cuttingProgress++;
 
             var cuttingRecipeSO = GetCuttingRecipeFromObject(objectOnThisCounter);
-            if (cuttinProgress >= cuttingRecipeSO.cuttingProgressMax)
+
+            HandleProgressChanged?.Invoke(this, new HandleProgressChangedEventArgs()
+            {
+                progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax
+            });
+            if (cuttingProgress >= cuttingRecipeSO.cuttingProgressMax)
             {
                 // There is a kitchen object here
                 // Destroy current kitchen object
