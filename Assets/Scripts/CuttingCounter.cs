@@ -55,16 +55,22 @@ public class CuttingCounter : BaseCounter
         // Only start cutting if:
         // 1. The cutting counter has a kitchen object
         // 2. The kitchen object has a corresponding cutting recipe
-        if (HasKitchenObject() && HasMatchingRecipe(GetKitchenObject().GetKitchenObjectSO()))
+        var objectOnThisCounter = GetKitchenObject()?.GetKitchenObjectSO();
+        if (HasKitchenObject() && HasMatchingRecipe(objectOnThisCounter))
         {
             cuttinProgress++;
-            // There is a kitchen object here
-            // Destroy current kitchen object
-            // Then replace it with the cut kitchen object
-            Debug.Log(GetKitchenObject());
-            KitchenObjectSO cuttingResult = GetObjectWithRecipe(GetKitchenObject().GetKitchenObjectSO());
-            GetKitchenObject().DestroySelf();
-            KitchenObject.SpawnKitchenObject(cuttingResult, this);
+
+            var cuttingRecipeSO = GetCuttingRecipeFromObject(objectOnThisCounter);
+            if (cuttinProgress >= cuttingRecipeSO.cuttingProgressMax)
+            {
+                // There is a kitchen object here
+                // Destroy current kitchen object
+                // Then replace it with the cut kitchen object
+                Debug.Log(GetKitchenObject());
+                KitchenObjectSO cuttingResult = ToCutKitchenObject(GetKitchenObject().GetKitchenObjectSO());
+                GetKitchenObject().DestroySelf();
+                KitchenObject.SpawnKitchenObject(cuttingResult, this);
+            }
         }
         // Do nothing, as the cutting counter does not have any kitchen object 
     }
@@ -82,18 +88,15 @@ public class CuttingCounter : BaseCounter
         return false;
     }
 
-    private KitchenObjectSO GetObjectWithRecipe(KitchenObjectSO fromObject)
+    private KitchenObjectSO ToCutKitchenObject(KitchenObjectSO fromObject)
     {
-        foreach (var cuttingRecipeSO in cuttingRecipeSOArray)
+        var cuttingRecipeSo = GetCuttingRecipeFromObject(fromObject);
+
+        if (cuttingRecipeSo is not null)
         {
-            if (cuttingRecipeSO.fromObject == fromObject)
-            {
-                return cuttingRecipeSO.toObject;
-            }
+            return cuttingRecipeSo.toObject;
         }
 
-        Debug.LogError(
-            $"GetObjectWithRecipe: Can't find any matching cuttingKitchenObj for {fromObject}, returning null and might cause exception");
         return null;
     }
 
@@ -109,5 +112,22 @@ public class CuttingCounter : BaseCounter
     {
         GetKitchenObject().SetParent(player);
         clearKitchenObject();
+    }
+
+    private CuttingRecipeSO GetCuttingRecipeFromObject(KitchenObjectSO fromObject)
+    {
+        foreach (var cuttingRecipeSO in cuttingRecipeSOArray)
+
+        {
+            if (cuttingRecipeSO.fromObject == fromObject)
+            {
+                return cuttingRecipeSO;
+            }
+        }
+
+        Debug.LogError(
+            $"GetCuttingRecipeFromObject: Can't find any matching cuttingKitchenObj for {fromObject}, returning null and might cause exception");
+
+        return null;
     }
 }
