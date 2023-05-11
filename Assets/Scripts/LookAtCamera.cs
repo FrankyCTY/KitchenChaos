@@ -9,6 +9,8 @@ public class LookAtCamera : MonoBehaviour
     {
         LookAt,
         LookAtInverted,
+        CameraForward,
+        CameraForwardInverted,
     }
 
     [SerializeField] private Mode mode;
@@ -18,6 +20,8 @@ public class LookAtCamera : MonoBehaviour
         switch (mode)
         {
             case Mode.LookAt:
+                // Rotates the transform so the forward vector points at target's current position (origin)
+                // Instead of syncing/aligning their forward axis, it force this object to rotate to look at the camera's origin
                 transform.LookAt(Camera.main.transform);
                 break;
             case Mode.LookAtInverted:
@@ -31,6 +35,13 @@ public class LookAtCamera : MonoBehaviour
                 /// We basically look at the inverted direction :)
                 Vector3 directionFromCamera = transform.position - Camera.main.transform.position;
                 transform.LookAt(transform.position + directionFromCamera );
+                break;
+            case Mode.CameraForward:
+                // Making an object face a target direction: Make object looks in the camera (not look at)
+                transform.forward = Camera.main.transform.forward;
+                break;
+            case Mode.CameraForwardInverted:
+                transform.forward = -Camera.main.transform.forward;
                 break;
             default:
                 return;
