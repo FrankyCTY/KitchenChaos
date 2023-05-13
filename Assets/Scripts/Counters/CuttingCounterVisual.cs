@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CuttingCounterVisual : MonoBehaviour
 {
@@ -17,10 +18,10 @@ public class CuttingCounterVisual : MonoBehaviour
 
     private void Start()
     {
-        this.cuttingCounter.HandleCut += CuttingCounter_HandleCut;
+        this.cuttingCounter.HandleCut += CuttingCounterHandleCut;
     }
 
-    private void CuttingCounter_HandleCut(object sender, EventArgs e)
+    private void CuttingCounterHandleCut(object sender, EventArgs e)
     {
         this.animator.SetTrigger(CUT);
     }

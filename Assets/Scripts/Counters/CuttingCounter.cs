@@ -5,18 +5,12 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class CuttingCounter : BaseCounter
+public class CuttingCounter : BaseCounter, IHasProgress
 {
-    public event EventHandler<HandleProgressChangedEventArgs> HandleProgressChanged;
+    public event EventHandler<IHasProgress.HandleProgressChangedEventArgs> HandleProgressChanged;
     public event EventHandler HandleCut;
 
-    public class HandleProgressChangedEventArgs : EventArgs
-    {
-        public float progressNormalized;
-    }
-
-    [FormerlySerializedAs("cuttingKitchenObjectSOArray")] [SerializeField]
-    private CuttingRecipeSO[] cuttingRecipeSOArray;
+    [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
 
     private int cuttingProgress;
 
@@ -38,7 +32,7 @@ public class CuttingCounter : BaseCounter
                     var objectOnThisCounter = GetObjectSoOnThisCounter();
                     var cuttingRecipeSO = GetCuttingRecipeFromObject(objectOnThisCounter);
 
-                    HandleProgressChanged?.Invoke(this, new HandleProgressChangedEventArgs()
+                    HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs()
                     {
                         progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax
                     });
@@ -102,18 +96,18 @@ public class CuttingCounter : BaseCounter
 
     private void DispatchCuttingEvents(CuttingRecipeSO cuttingRecipeSO)
     {
-            HandleCut?.Invoke(this,EventArgs.Empty);
-            HandleProgressChanged?.Invoke(this, new HandleProgressChangedEventArgs()
-            {
-                progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax
-            });
+        HandleCut?.Invoke(this, EventArgs.Empty);
+        HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs()
+        {
+            progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax
+        });
     }
 
     private bool HasCutCompleted(CuttingRecipeSO cuttingRecipeSO)
     {
         return cuttingProgress >= cuttingRecipeSO.cuttingProgressMax;
     }
-    
+
     private void ReplaceObjOnCounterWithCutObject()
     {
         // There is a kitchen object here
