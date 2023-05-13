@@ -57,7 +57,6 @@ public class StoveCounter : BaseCounter, IHasProgress
                     KitchenObjectSO friedObject = fryingRecipeSO.toObject;
                     KitchenObject.SpawnKitchenObject(friedObject, this);
 
-                    Debug.Log($"StoveCounter: Update: From Frying to Fried!");
                     state = State.Fried;
                     burningTimer = 0f;
                     burningRecipeSO = GetBurningRecipeFromObject(GetKitchenObject().GetKitchenObjectSO());
@@ -68,7 +67,6 @@ public class StoveCounter : BaseCounter, IHasProgress
                     });
                 }
 
-                Debug.Log($"StoveCounter: Update: Frying timer has value {fryingTimer}");
                 break;
             case State.Fried:
                 burningTimer += Time.deltaTime;

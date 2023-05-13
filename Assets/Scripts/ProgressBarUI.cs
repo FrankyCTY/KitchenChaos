@@ -8,17 +8,17 @@ public class ProgressBarUI : MonoBehaviour
 {
     [SerializeField] private GameObject hasProgressGameObject;
     [SerializeField] private Image barImage;
-    private IHasProgress hasProgress;
+    private IHasProgress hasProgressObj;
 
     private void Start()
     {
-        hasProgress = hasProgressGameObject.GetComponent<IHasProgress>();
-        if (hasProgress == null)
+        hasProgressObj = hasProgressGameObject.GetComponent<IHasProgress>();
+        if (hasProgressObj == null)
         {
             Debug.LogError("Game Object" + hasProgressGameObject + "does not have a component that implements IHasProgress!");
         }
         
-        hasProgress.HandleProgressChanged += HasProgress_HandleProgressChanged;
+        hasProgressObj.HandleProgressChanged += HasProgress_HandleProgressChanged;
 
         barImage.fillAmount = 0f;
         Hide();
