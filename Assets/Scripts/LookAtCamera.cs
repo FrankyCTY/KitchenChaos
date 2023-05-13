@@ -33,8 +33,8 @@ public class LookAtCamera : MonoBehaviour
                 /// Look inverted:
                 /// Instead of from object seeing to the camera
                 /// We basically look at the inverted direction :)
-                Vector3 directionFromCamera = transform.position - Camera.main.transform.position;
-                transform.LookAt(directionFromCamera);
+                Vector3 displacementFromCamera = transform.position - Camera.main.transform.position;
+                transform.LookAt(transform.position + displacementFromCamera);
                 break;
             case Mode.CameraForward:
                 // Making an object face a target direction: Make object looks in the camera (not look at)
