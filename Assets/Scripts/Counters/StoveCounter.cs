@@ -1,33 +1,58 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class StoveCounter : BaseCounter
 {
+    private enum State
+    {
+        Idle,
+        Frying,
+        Fried,
+        Burned
+    }
+
+
     [SerializeField] private FryingRecipeSO[] fryingRecipeSOArray;
-    private int fryingProgress = 0;
+    private State state;
     private float fryingTimer;
+    private FryingRecipeSO fryingRecipeSO;
+
+    private void Start()
+    {
+        state = State.Idle;
+    }
 
     private void Update()
     {
-        if (HasKitchenObject())
+        switch (state)
         {
-            fryingTimer += Time.deltaTime;
+            case State.Idle:
+                break;
+            case State.Frying:
+                fryingTimer += Time.deltaTime;
 
-            FryingRecipeSO fryingRecipeSO = GetFryingRecipeFromObject(GetKitchenObject().GetKitchenObjectSO());
-            if (fryingTimer > fryingRecipeSO.fryingTimerMax)
-            {
-                // fried
-                fryingTimer = 0f;
-                Debug.Log($"StoveCounter: Update: Fried!");
-                GetKitchenObject().DestroySelf();
+                if (fryingTimer > fryingRecipeSO.fryingTimerMax)
+                {
+                    GetKitchenObject().DestroySelf();
 
-                KitchenObjectSO friedObject = fryingRecipeSO.toObject;
-                KitchenObject.SpawnKitchenObject(friedObject, this);
-            }
+                    KitchenObjectSO friedObject = fryingRecipeSO.toObject;
+                    KitchenObject.SpawnKitchenObject(friedObject, this);
 
-            Debug.Log($"StoveCounter: Update: Frying timer has value {fryingTimer}");
+                    Debug.Log($"StoveCounter: Update: From Frying to Fried!");
+                    state = State.Fried;
+                }
+
+                Debug.Log($"StoveCounter: Update: Frying timer has value {fryingTimer}");
+                break;
+            case State.Fried:
+                break;
+            case State.Burned:
+                break;
         }
+        
+        Debug.Log(state);
     }
 
     public override void Interact(Player player)
@@ -42,6 +67,10 @@ public class StoveCounter : BaseCounter
                 if (HasMatchingRecipe(kitchenObjectOnPlayerHand.GetKitchenObjectSO()))
                 {
                     playerPutObjectToThisCounter(player, kitchenObjectOnPlayerHand);
+                    fryingRecipeSO = GetFryingRecipeFromObject(GetKitchenObject().GetKitchenObjectSO());
+
+                    state = State.Frying;
+                    fryingTimer = 0f;
                 }
                 // If no valid recipe found, skip.
             }
