@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class StoveCounter : BaseCounter
 {
@@ -15,9 +16,12 @@ public class StoveCounter : BaseCounter
 
 
     [SerializeField] private FryingRecipeSO[] fryingRecipeSOArray;
+    [SerializeField] private BurningRecipeSO[] burningRecipeSOArray;
     private State state;
     private float fryingTimer;
+    private float burningTimer;
     private FryingRecipeSO fryingRecipeSO;
+    private BurningRecipeSO burningRecipeSO;
 
     private void Start()
     {
@@ -42,16 +46,31 @@ public class StoveCounter : BaseCounter
 
                     Debug.Log($"StoveCounter: Update: From Frying to Fried!");
                     state = State.Fried;
+                    burningTimer = 0f;
+                    burningRecipeSO = GetBurningRecipeFromObject(GetKitchenObject().GetKitchenObjectSO());
                 }
 
                 Debug.Log($"StoveCounter: Update: Frying timer has value {fryingTimer}");
                 break;
             case State.Fried:
+                burningTimer += Time.deltaTime;
+                if (burningTimer > burningRecipeSO.burningTimerMax)
+                {
+                    GetKitchenObject().DestroySelf();
+
+                    KitchenObjectSO burningObject = burningRecipeSO.toObject;
+                    KitchenObject.SpawnKitchenObject(burningObject, this);
+
+                    Debug.Log($"StoveCounter: Update: From Fried to Burned!");
+                    state = State.Burned;
+                }
+
+                Debug.Log($"StoveCounter: Update: Burning timer has value {burningTimer}");
                 break;
             case State.Burned:
                 break;
         }
-        
+
         Debug.Log(state);
     }
 
@@ -146,6 +165,23 @@ public class StoveCounter : BaseCounter
 
         Debug.LogError(
             $"GetFryingRecipeFromObject: Can't find any matching fryingKitchenObj for {fromObject}, returning null and might cause exception");
+
+        return null;
+    }
+
+    private BurningRecipeSO GetBurningRecipeFromObject(KitchenObjectSO fromObject)
+    {
+        foreach (var burningRecipeSO in burningRecipeSOArray)
+
+        {
+            if (burningRecipeSO.fromObject == fromObject)
+            {
+                return burningRecipeSO;
+            }
+        }
+
+        Debug.LogError(
+            $"GetBurningRecipeFromObject: Can't find any matching burningKitchenObj for {fromObject}, returning null and might cause exception");
 
         return null;
     }
