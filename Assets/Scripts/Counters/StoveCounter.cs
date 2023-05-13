@@ -6,7 +6,14 @@ using UnityEngine.Serialization;
 
 public class StoveCounter : BaseCounter
 {
-    private enum State
+    public event EventHandler<HandleStateChangedEventArgs> HandleStateChanged;
+
+    public class HandleStateChangedEventArgs : EventArgs
+    {
+        public State state;
+    }
+
+    public enum State
     {
         Idle,
         Frying,
@@ -48,6 +55,11 @@ public class StoveCounter : BaseCounter
                     state = State.Fried;
                     burningTimer = 0f;
                     burningRecipeSO = GetBurningRecipeFromObject(GetKitchenObject().GetKitchenObjectSO());
+
+                    HandleStateChanged?.Invoke(this, new HandleStateChangedEventArgs
+                    {
+                        state = state
+                    });
                 }
 
                 Debug.Log($"StoveCounter: Update: Frying timer has value {fryingTimer}");
@@ -61,17 +73,18 @@ public class StoveCounter : BaseCounter
                     KitchenObjectSO burningObject = burningRecipeSO.toObject;
                     KitchenObject.SpawnKitchenObject(burningObject, this);
 
-                    Debug.Log($"StoveCounter: Update: From Fried to Burned!");
                     state = State.Burned;
-                }
 
-                Debug.Log($"StoveCounter: Update: Burning timer has value {burningTimer}");
+                    HandleStateChanged?.Invoke(this, new HandleStateChangedEventArgs
+                    {
+                        state = state
+                    });
+                }
                 break;
             case State.Burned:
                 break;
         }
 
-        Debug.Log(state);
     }
 
     public override void Interact(Player player)
@@ -90,6 +103,11 @@ public class StoveCounter : BaseCounter
 
                     state = State.Frying;
                     fryingTimer = 0f;
+
+                    HandleStateChanged?.Invoke(this, new HandleStateChangedEventArgs
+                    {
+                        state = state
+                    });
                 }
                 // If no valid recipe found, skip.
             }
@@ -109,6 +127,13 @@ public class StoveCounter : BaseCounter
             {
                 // Player is not carrying anything
                 playerPickUpObjectOnThisCounter(player);
+
+                state = State.Idle;
+
+                HandleStateChanged?.Invoke(this, new HandleStateChangedEventArgs
+                {
+                    state = state
+                });
             }
         }
     }
