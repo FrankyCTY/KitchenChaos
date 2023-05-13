@@ -12,7 +12,6 @@ public class ProgressBarUI : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log(hasProgressGameObject);
         hasProgress = hasProgressGameObject.GetComponent<IHasProgress>();
         if (hasProgress == null)
         {
