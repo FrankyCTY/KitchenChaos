@@ -230,7 +230,7 @@ PrefabInstance:
     - target: {fileID: 2541967832316530404, guid: 74dd5757c8fc544b79ce92be619bca33,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 2541967832316530404, guid: 74dd5757c8fc544b79ce92be619bca33,
         type: 3}
@@ -281,6 +281,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7471008545431542993, guid: 74dd5757c8fc544b79ce92be619bca33,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.24
       objectReference: {fileID: 0}
     - target: {fileID: 7808043294506530607, guid: 74dd5757c8fc544b79ce92be619bca33,
         type: 3}
@@ -335,3 +340,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   counterTopPoint: {fileID: 6189812866940873656}
+  plateKitchenObjectSO: {fileID: 11400000, guid: 40b96816408a944709e10d8a9fc74ddc,
+    type: 2}
