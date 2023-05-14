@@ -44,7 +44,7 @@ public class StoveCounter : BaseCounter, IHasProgress
                 break;
             case State.Frying:
                 fryingTimer += Time.deltaTime;
-                
+
                 HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs
                 {
                     progressNormalized = fryingTimer / fryingRecipeSO.fryingTimerMax
@@ -70,12 +70,12 @@ public class StoveCounter : BaseCounter, IHasProgress
                 break;
             case State.Fried:
                 burningTimer += Time.deltaTime;
-                
+
                 HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs
                 {
                     progressNormalized = burningTimer / burningRecipeSO.burningTimerMax
-                }); 
-                
+                });
+
                 if (burningTimer > burningRecipeSO.burningTimerMax)
                 {
                     GetKitchenObject().DestroySelf();
@@ -89,97 +89,102 @@ public class StoveCounter : BaseCounter, IHasProgress
                     {
                         state = state
                     });
-                    
+
                     HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs
                     {
                         progressNormalized = 0f
-                    }); 
+                    });
                 }
+
                 break;
             case State.Burned:
                 break;
         }
-
     }
 
     public override void Interact(Player player)
     {
         if (!HasKitchenObject())
         {
-            // There is no Kitchen object here
-            if (player.HasKitchenObject())
-            {
-                // Check if from obj is valid and can be transformed via recipe
-                var kitchenObjectOnPlayerHand = player.GetKitchenObject();
-                if (HasMatchingRecipe(kitchenObjectOnPlayerHand.GetKitchenObjectSO()))
-                {
-                    playerPutObjectToThisCounter(player, kitchenObjectOnPlayerHand);
-                    fryingRecipeSO = GetFryingRecipeFromObject(GetKitchenObject().GetKitchenObjectSO());
+            HandleNoKitchenObjectOnCounter(player);
+            return;
+        }
 
-                    state = State.Frying;
-                    fryingTimer = 0f;
+        HandleKitchenObjectOnCounter(player);
+    }
 
-                    HandleStateChanged?.Invoke(this, new HandleStateChangedEventArgs
-                    {
-                        state = state
-                    });
-                    
-                    HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs
-                    {
-                        progressNormalized = fryingTimer / fryingRecipeSO.fryingTimerMax
-                    });
-                }
-                // If no valid recipe found, skip.
-            }
-            else
+    private void HandleNoKitchenObjectOnCounter(Player player)
+    {
+        // There is no Kitchen object here
+        if (player.HasKitchenObject())
+        {
+            TryFryingPlayerHoldingObject(player);
+            return;
+        }
+    }
+
+    private void HandleKitchenObjectOnCounter(Player player)
+    {
+        // There is already a Kitchen Object here
+        if (player.HasKitchenObject())
+        {
+            bool isPlayerHoldingPlate = player.GetKitchenObject().TryGetPlate(out PlateKitchenObject playerPlate);
+            if (isPlayerHoldingPlate)
             {
-                // Player is not carrying anything
+                TryAddIngredientToPlayerPlate(playerPlate);
             }
         }
         else
         {
-            // There is already a Kitchen Object here
-            if (player.HasKitchenObject())
+            // Player is not carrying anything
+            playerPickUpObjectOnThisCounter(player);
+        }
+    }
+
+
+    private void TryAddIngredientToPlayerPlate(PlateKitchenObject playerPlate)
+    {
+        var isAddingIngredientSuccessful = playerPlate.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO());
+        if (isAddingIngredientSuccessful)
+        {
+            GetKitchenObject().DestroySelf();
+
+            state = State.Idle;
+
+            HandleStateChanged?.Invoke(this, new HandleStateChangedEventArgs
             {
-                // Object on the counter BUT the Player is carrying something, do nothing
-                if (player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject))
-                {
-                    // Player is holding a plate
-                    if (plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO()))
-                    {
-                        GetKitchenObject().DestroySelf();
-                        
-                        state = State.Idle;
+                state = state
+            });
 
-                        HandleStateChanged?.Invoke(this, new HandleStateChangedEventArgs
-                        {
-                            state = state
-                        });
-                
-                        HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs
-                        {
-                            progressNormalized = 0f
-                        }); 
-                    }
-                }
-            }
-            else
+            HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs
             {
-                // Player is not carrying anything
-                playerPickUpObjectOnThisCounter(player);
+                progressNormalized = 0f
+            });
+        }
+    }
 
-                state = State.Idle;
+    private void TryFryingPlayerHoldingObject(Player player)
+    {
+        // Check if from obj is valid and can be transformed via recipe
+        KitchenObject kitchenObjectOnPlayerHand = player.GetKitchenObject();
 
-                HandleStateChanged?.Invoke(this, new HandleStateChangedEventArgs
-                {
-                    state = state
-                });
-                
-                HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs
-                {
-                    progressNormalized = 0f
-                }); 
-            }
+        if (HasMatchingRecipe(kitchenObjectOnPlayerHand.GetKitchenObjectSO()))
+        {
+            playerPutObjectToThisCounter(player, kitchenObjectOnPlayerHand);
+            fryingRecipeSO = GetFryingRecipeFromObject(GetKitchenObject().GetKitchenObjectSO());
+
+            state = State.Frying;
+            fryingTimer = 0f;
+
+            HandleStateChanged?.Invoke(this, new HandleStateChangedEventArgs
+            {
+                state = state
+            });
+
+            HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs
+            {
+                progressNormalized = fryingTimer / fryingRecipeSO.fryingTimerMax
+            });
         }
     }
 
@@ -208,6 +213,18 @@ public class StoveCounter : BaseCounter, IHasProgress
     {
         GetKitchenObject().SetParent(player);
         clearKitchenObject();
+
+        state = State.Idle;
+
+        HandleStateChanged?.Invoke(this, new HandleStateChangedEventArgs
+        {
+            state = state
+        });
+
+        HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs
+        {
+            progressNormalized = 0f
+        });
     }
 
     private KitchenObjectSO GetObjectSoOnThisCounter()
