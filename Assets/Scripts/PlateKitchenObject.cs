@@ -48,4 +48,9 @@ public class PlateKitchenObject : KitchenObject
     {
         return validKitchenObjectSOList.Contains(kitchenObjectSo);
     }
+
+    public List<KitchenObjectSO> GetKitchenObjectSOList()
+    {
+        return kitchenObjectSOList;
+    }
 }
