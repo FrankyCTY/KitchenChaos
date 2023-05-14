@@ -10,27 +10,55 @@ public class ClearCounter : BaseCounter
     {
         if (!HasKitchenObject())
         {
-            // There is no Kitchen object here
-            if (player.HasKitchenObject())
-            {
-                playerPutObjectOnCounter(player);
-            }
-            else
-            {
-                // Player is not carrying anything
-            }
+            HandleNoKitchenObjectOnCounter(player);
+            return;
         }
-        else
+
+        HandleKitchenObjectOnCounter(player);
+    }
+
+    private void HandleNoKitchenObjectOnCounter(Player player)
+    {
+        if (!player.HasKitchenObject()) return;
+
+        playerPutObjectOnCounter(player);
+    }
+
+    private void HandleKitchenObjectOnCounter(Player player)
+    {
+        if (!player.HasKitchenObject())
         {
-            // There is already a Kitchen Object here
-            if (player.HasKitchenObject())
-            {
-                // Object on the counter BUT the Player is carrying something, do nothing
-            }
-            else
-            {
-                playerPickUpObjectOnCounter(player);
-            }
+            playerPickUpObjectOnCounter(player);
+            return;
+        }
+
+        bool isPlayerHoldingPlate = player.GetKitchenObject().TryGetPlate(out PlateKitchenObject playerPlate);
+        if (isPlayerHoldingPlate)
+        {
+            TryAddIngredientToPlayerPlate(playerPlate);
+            return;
+        }
+
+        bool isPlateOnThisCounter = GetKitchenObject().TryGetPlate(out PlateKitchenObject plateOnCounter);
+        if (isPlateOnThisCounter)
+        {
+            TryAddIngredientToCounterPlate(plateOnCounter, player);
+        }
+    }
+
+    private void TryAddIngredientToPlayerPlate(PlateKitchenObject playerPlate)
+    {
+        if (playerPlate.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO()))
+        {
+            GetKitchenObject().DestroySelf();
+        }
+    }
+
+    private void TryAddIngredientToCounterPlate(PlateKitchenObject counterPlate, Player player)
+    {
+        if (counterPlate.TryAddIngredient(player.GetKitchenObject().GetKitchenObjectSO()))
+        {
+            player.GetKitchenObject().DestroySelf();
         }
     }
 
