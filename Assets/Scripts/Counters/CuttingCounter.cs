@@ -18,52 +18,50 @@ public class CuttingCounter : BaseCounter, IHasProgress
     {
         if (!HasKitchenObject())
         {
-            // There is no Kitchen object here
-            if (player.HasKitchenObject())
-            {
-                // Check if from obj is valid and can be transformed via recipe
-                var kitchenObjectOnPlayerHand = player.GetKitchenObject();
-                if (HasMatchingRecipe(kitchenObjectOnPlayerHand.GetKitchenObjectSO()))
-                {
-                    playerPutObjectToThisCounter(player, kitchenObjectOnPlayerHand);
-
-                    cuttingProgress = 0;
-
-                    var objectOnThisCounter = GetObjectSoOnThisCounter();
-                    var cuttingRecipeSO = GetCuttingRecipeFromObject(objectOnThisCounter);
-
-                    HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs()
-                    {
-                        progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax
-                    });
-                }
-                // If no valid recipe found, skip.
-            }
-            else
-            {
-                // Player is not carrying anything
-            }
+            HandleNoKitchenObjectOnCounter(player);
+            return;
         }
-        else
+
+        HandleKitchenObjectOnCounter(player);
+    }
+    
+    private void HandleNoKitchenObjectOnCounter(Player player)
+    {
+        if (!player.HasKitchenObject()) return;
+
+        var kitchenObjectOnPlayerHand = player.GetKitchenObject();
+        if (!HasMatchingRecipe(kitchenObjectOnPlayerHand.GetKitchenObjectSO())) return;
+
+        // Has matching recipe. Can place recipe on the counter
+        playerPutObjectToThisCounter(player, kitchenObjectOnPlayerHand);
+
+        var objectOnThisCounter = GetObjectSoOnThisCounter();
+        var cuttingRecipeSO = GetCuttingRecipeFromObject(objectOnThisCounter);
+
+        HandleProgressChanged?.Invoke(this, new IHasProgress.HandleProgressChangedEventArgs()
         {
-            // There is already a Kitchen Object here
-            if (player.HasKitchenObject())
-            {
-                // Object on the counter BUT the Player is carrying something, do nothing
-                if (player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject))
-                {
-                    // Player is holding a plat
-                    if (plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO()))
-                    {
-                        GetKitchenObject().DestroySelf();
-                    }
-                }
-            }
-            else
-            {
-                // Player is not carrying anything
-                playerPickUpObjectOnThisCounter(player);
-            }
+            progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax
+        });
+    }
+
+    private void HandleKitchenObjectOnCounter(Player player)
+    {
+        if (!player.HasKitchenObject())
+        {
+            playerPickUpObjectOnThisCounter(player);
+            return;
+        }
+
+        TryAddIngredientToPlayerPlate(player);
+    }
+
+    private void TryAddIngredientToPlayerPlate(Player player)
+    {
+        if (!player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject)) return;
+
+        if (plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO()))
+        {
+            GetKitchenObject().DestroySelf();
         }
     }
 
@@ -158,6 +156,8 @@ public class CuttingCounter : BaseCounter, IHasProgress
             "CuttingCounter: Interact: Counter has no object AND player is carrying a kitchen object, put object to the counter");
         kitchenObject.SetParent(this);
         player.clearKitchenObject();
+
+        cuttingProgress = 0;
     }
 
     private void playerPickUpObjectOnThisCounter(Player player)
