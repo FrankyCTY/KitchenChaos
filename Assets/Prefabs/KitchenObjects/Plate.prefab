@@ -124,6 +124,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1259000495138635816, guid: 10e39c981f2de6441b54efde32ced8f0,
         type: 3}
+      propertyPath: plateKitchenObject
+      value: 
+      objectReference: {fileID: -2361747901219930702}
+    - target: {fileID: 1259000495138635816, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
       propertyPath: kitchecnObjectSOGameObjectList.Array.size
       value: 6
       objectReference: {fileID: 0}
