@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlateKitchenObject : KitchenObject
 {
-    public event EventHandler<HandleIngredientAddedEventArgs> HandleIngredientAdeded;
+    public event EventHandler<HandleIngredientAddedEventArgs> HandleIngredientAdded;
 
     public class HandleIngredientAddedEventArgs : EventArgs
     {
@@ -37,7 +37,7 @@ public class PlateKitchenObject : KitchenObject
         
         kitchenObjectSOList.Add(kitchenObjectSo);
         
-        HandleIngredientAdeded?.Invoke(this, new HandleIngredientAddedEventArgs
+        HandleIngredientAdded?.Invoke(this, new HandleIngredientAddedEventArgs
         {
             kitchenObjectSo = kitchenObjectSo
         });
