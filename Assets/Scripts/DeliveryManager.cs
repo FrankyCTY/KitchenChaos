@@ -8,6 +8,8 @@ public class DeliveryManager : MonoBehaviour
 {
     public event EventHandler OnRecipeSpawned;
     public event EventHandler OnRecipeCompleted;
+    public event EventHandler OnRecipeSuccess;
+    public event EventHandler OnRecipeFail;
     
     public static DeliveryManager Instance { get; private set; }
 
@@ -76,6 +78,7 @@ public class DeliveryManager : MonoBehaviour
         // Player did not deliver a correct recipe
         if (!hasDeliveredTheCorrectObj)
         {
+            OnRecipeFail?.Invoke(this, EventArgs.Empty);
             Debug.Log("Player did not deliver a correct recipe");
         }
     }
@@ -92,10 +95,16 @@ public class DeliveryManager : MonoBehaviour
             return false;
         }
 
+        AfterDeliverySuccess(waitingRecipeSoIdx);
+        return true;
+    }
+
+    private void AfterDeliverySuccess(int waitingRecipeSoIdx)
+    {
         Debug.Log("Player delivered the correct recipe!");
         waitingRecipeSOList.RemoveAt(waitingRecipeSoIdx);
         OnRecipeCompleted?.Invoke(this, EventArgs.Empty);
-        return true;
+        OnRecipeSuccess?.Invoke(this, EventArgs.Empty);
     }
 
     private bool ValidateRecipeIngredients(List<KitchenObjectSO> recipeIngredients,
