@@ -13,6 +13,13 @@ public class SoundManager : MonoBehaviour
         DeliveryManager.Instance.OnRecipeFail += DeliveryManager_HandleRecipeFail;
 
         CuttingCounter.OnAnyCut += CuttingCounter_HandleAnyCut;
+
+        Player.Instance.OnPickUp += Player_HandlePickUp;
+    }
+
+    private void Player_HandlePickUp(object sender, EventArgs e)
+    {
+        PlaySound(audioClipRefsSO.objectPickup, Player.Instance.transform.position);
     }
 
     private void CuttingCounter_HandleAnyCut(object sender, EventArgs e)
