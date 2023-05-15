@@ -6,6 +6,9 @@ using UnityEngine;
 
 public class DeliveryManager : MonoBehaviour
 {
+    public event EventHandler OnRecipeSpawned;
+    public event EventHandler OnRecipeCompleted;
+    
     public static DeliveryManager Instance { get; private set; }
 
     [SerializeField] private RecipeListSO recipeListSO;
@@ -32,10 +35,11 @@ public class DeliveryManager : MonoBehaviour
 
             if (!IsWaitingRecipeSOListFull())
             {
-                RecipeSO waitingRecipeSO =
+                RecipeSO newWaitingRecipeSO =
                     recipeListSO.recipeSOList[UnityEngine.Random.Range(0, recipeListSO.recipeSOList.Count)];
-                Debug.Log(waitingRecipeSO.recipeName);
-                waitingRecipeSOList.Add(waitingRecipeSO);
+                
+                waitingRecipeSOList.Add(newWaitingRecipeSO);
+                OnRecipeSpawned?.Invoke(this, EventArgs.Empty);
             }
         }
     }
@@ -90,6 +94,7 @@ public class DeliveryManager : MonoBehaviour
 
         Debug.Log("Player delivered the correct recipe!");
         waitingRecipeSOList.RemoveAt(waitingRecipeSoIdx);
+        OnRecipeCompleted?.Invoke(this, EventArgs.Empty);
         return true;
     }
 
@@ -107,5 +112,10 @@ public class DeliveryManager : MonoBehaviour
         }
 
         return true;
+    }
+
+    public List<RecipeSO> GetWaitingRecipeSOList()
+    {
+        return waitingRecipeSOList;
     }
 }
