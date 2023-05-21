@@ -20,5 +20,8 @@ public class MainMenuUI : MonoBehaviour
         {
             Application.Quit();
         });
+
+        // Ensure even we are coming from a pause (to main menu scene), we will resume for the user instead of pausing, as it does not make sense to pause in the main menu scene
+        Time.timeScale = 1f;
     }
 }

@@ -25,6 +25,18 @@ public class GameInput : MonoBehaviour
         playerInputActions.Player.Pause.performed += Pause_performed;
     }
 
+    private void OnDestroy()
+    {
+        // Clean up object in memories
+        // So that changing scene, the playerInputActions obj will be removed from the memory instead of staying there
+        // and referencing a removed object (etc. GamePauseUI object)
+        playerInputActions.Player.Interact.performed -= Interact_performed;
+        playerInputActions.Player.InteractAlternate.performed -= InteractAlternate_performed;
+        playerInputActions.Player.Pause.performed -= Pause_performed;
+        
+        playerInputActions.Dispose();
+    }
+
     private void Pause_performed(InputAction.CallbackContext obj)
     {
         HandlePauseAction?.Invoke(this, EventArgs.Empty);
