@@ -4534,6 +4534,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c77e3d823dc0042fa95853b36153da65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resumeButton: {fileID: 1335687381}
+  mainMenuButton: {fileID: 95127658}
 --- !u!1 &1487740451
 GameObject:
   m_ObjectHideFlags: 0
