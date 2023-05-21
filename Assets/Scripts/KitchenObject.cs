@@ -26,7 +26,7 @@ public class KitchenObject : MonoBehaviour
         parent.SetKitchenObject(this);
         this.parent = parent;
         
-        positionSelf(parent);
+        PositionSelf(parent);
     }
 
     public IKitchenObjectParent GetParent()
@@ -34,7 +34,7 @@ public class KitchenObject : MonoBehaviour
         return this.parent;
     }
 
-    private void positionSelf(IKitchenObjectParent parent)
+    private void PositionSelf(IKitchenObjectParent parent)
     {
         transform.parent = parent.GetKitchenObjectHoldingPointTransform();
         Debug.Log($"KitchenObject: Ready to position myself to parent {parent}");
