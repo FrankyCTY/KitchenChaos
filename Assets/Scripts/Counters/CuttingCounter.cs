@@ -8,6 +8,12 @@ using UnityEngine.Serialization;
 public class CuttingCounter : BaseCounter, IHasProgress
 {
     public static event EventHandler OnAnyCut;
+
+    public new static void ResetStaticData()
+    {
+        OnAnyCut = null;
+    }
+    
     public event EventHandler<IHasProgress.HandleProgressChangedEventArgs> HandleProgressChanged;
     public event EventHandler HandleCut;
 
