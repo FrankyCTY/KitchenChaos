@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public event EventHandler OnStateChanged;
+    public event EventHandler OnGamePaused;
+    public event EventHandler OnGameResumed;
 
     private enum State
     {
@@ -22,11 +24,22 @@ public class GameManager : MonoBehaviour
     private float countdownToStartTimer = 3f;
     private float gamePlayingTimer;
     private float gamePlayingTimerMax = 20f;
+    private bool isGamePaused = false;
 
     private void Awake()
     {
         Instance = this;
         state = State.WaitingToStart;
+    }
+
+    private void Start()
+    {
+        GameInput.Instance.HandlePauseAction += Instance_HandlePauseAction;
+    }
+
+    private void Instance_HandlePauseAction(object sender, EventArgs e)
+    {
+        ToggleGamePause();
     }
 
     private void Update()
@@ -40,6 +53,7 @@ public class GameManager : MonoBehaviour
                     state = State.CountdownToStart;
                     OnStateChanged?.Invoke(this, EventArgs.Empty);
                 }
+
                 break;
             case State.CountdownToStart:
                 countdownToStartTimer -= Time.deltaTime;
@@ -49,6 +63,7 @@ public class GameManager : MonoBehaviour
                     gamePlayingTimer = gamePlayingTimerMax;
                     OnStateChanged?.Invoke(this, EventArgs.Empty);
                 }
+
                 break;
             case State.GamePlaying:
                 gamePlayingTimer -= Time.deltaTime;
@@ -57,12 +72,11 @@ public class GameManager : MonoBehaviour
                     state = State.GameOver;
                     OnStateChanged?.Invoke(this, EventArgs.Empty);
                 }
+
                 break;
             case State.GameOver:
                 break;
         }
-        
-        Debug.Log(state);
     }
 
     public bool IsGamePlaying()
@@ -89,5 +103,21 @@ public class GameManager : MonoBehaviour
     {
         // Counting down instead of counting up
         return 1 - (gamePlayingTimer / gamePlayingTimerMax);
-    } 
+    }
+
+    public void ToggleGamePause()
+    {
+        if (!isGamePaused)
+        {
+            Time.timeScale = 0f;
+            OnGamePaused?.Invoke(this, EventArgs.Empty);
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            OnGameResumed?.Invoke(this, EventArgs.Empty);
+        }
+
+        isGamePaused = !isGamePaused;
+    }
 }
