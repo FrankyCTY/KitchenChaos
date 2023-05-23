@@ -14,6 +14,7 @@ public class OptionsUI : MonoBehaviour
     [SerializeField] private Button closeButton;
     [SerializeField] private TextMeshProUGUI soundEffectsText;
     [SerializeField] private TextMeshProUGUI musicText;
+    [SerializeField] private Transform pressToRebindKey_trxm;
 
     private void Awake()
     {
@@ -43,6 +44,7 @@ public class OptionsUI : MonoBehaviour
         
         UpdateVisual();
 
+        HidePressToRebindKey();
         Hide();
     }
 
@@ -65,5 +67,15 @@ public class OptionsUI : MonoBehaviour
     public void Hide()
     {
         gameObject.SetActive(false);
+    }
+
+    public void ShowPressToRebindKey()
+    {
+        pressToRebindKey_trxm.gameObject.SetActive(true);
+    }
+    
+    public void HidePressToRebindKey()
+    {
+        pressToRebindKey_trxm.gameObject.SetActive(false);
     }
 }
