@@ -24,7 +24,9 @@ public class GamePauseUI : MonoBehaviour
         
         openOptionMenuButton.onClick.AddListener(() =>
         {
-            OptionsUI.Instance.Show();
+            Hide();
+            // Ensure Game Pause UI is shown when user clicks the close button from the Options UI
+            OptionsUI.Instance.Show(Show);
         });
     }
 
@@ -49,6 +51,9 @@ public class GamePauseUI : MonoBehaviour
     private void Show()
     {
         gameObject.SetActive(true);
+        
+        // Select (hover) by default on pause UI show up
+        resumeButton.Select();
     }
 
     private void Hide()

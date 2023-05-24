@@ -16,6 +16,8 @@ public class OptionsUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI musicText;
     [SerializeField] private Transform pressToRebindKey_trxm;
 
+    private Action handleOptionUIClosed;
+
     private void Awake()
     {
         Instance = this;
@@ -35,6 +37,7 @@ public class OptionsUI : MonoBehaviour
         closeButton.onClick.AddListener(() =>
         {
             Hide();
+            this.handleOptionUIClosed();
         });
     }
 
@@ -59,9 +62,12 @@ public class OptionsUI : MonoBehaviour
         musicText.text = "Music: " + Mathf.Round(BackgroundMusicManager.Instance.GetVolume() * 10f);
     }
 
-    public void Show()
+    public void Show(Action handleOptionUIClosed)
     {
+        this.handleOptionUIClosed = handleOptionUIClosed;
         gameObject.SetActive(true);
+        
+        soundEffectsButton.Select();
     }
     
     public void Hide()
