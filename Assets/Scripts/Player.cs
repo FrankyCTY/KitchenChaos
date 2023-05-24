@@ -127,7 +127,12 @@ public class Player : MonoBehaviour, IKitchenObjectParent
             transform.position += moveDirection * moveDistance;
             return;
         }
+        
+        this.tryMovingUserToAdjustedPosition(moveDirection, position, moveDistance, playerHeight, playerRadius);
+    }
 
+    private void tryMovingUserToAdjustedPosition(Vector3 moveDirection, Vector3 position, float moveDistance, float playerHeight, float playerRadius)
+    {
         var (canMoveToX, moveDirectionToX) =
             CheckCanMoveTowardsX(moveDirection, position, moveDistance, playerHeight, playerRadius);
 
@@ -149,9 +154,9 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     private static bool CheckCanMoveTowardsDesiredDirection(Vector3 moveDirection, Vector3 position, float moveDistance,
         float playerHeight, float playerRadius)
     {
-        bool result = !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius, moveDirection,
+        bool canMoveToDesiredDirection = !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius, moveDirection,
             moveDistance);
-        return result;
+        return canMoveToDesiredDirection;
     }
 
     private static (bool, Vector3) CheckCanMoveTowardsX(Vector3 moveDirection, Vector3 position, float moveDistance,
@@ -160,7 +165,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         // Try move towards X
         // As we are reassigning to a new vector3, the normalized y is gone, so we need to normalized it again
         Vector3 moveDirectionToX = (Vector3.right * moveDirection.x).normalized;
-        bool canMoveToX = !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius,
+        bool isMovingForward = moveDirectionToX.x < -.5f || moveDirectionToX.x > +.5f;
+        bool canMoveToX = isMovingForward && !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius,
             moveDirectionToX, moveDistance);
 
         return (canMoveToX, moveDirectionToX);
@@ -173,7 +179,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     {
         // Try move towards Z
         Vector3 moveDirectionToZ = (Vector3.forward * moveDirection.z).normalized;
-        bool canMoveToZ = !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius,
+        bool isMovingSideway = moveDirectionToZ.z < -.5f || moveDirectionToZ.x> +.5f;
+        bool canMoveToZ = isMovingSideway && !Physics.CapsuleCast(position, position + Vector3.up * playerHeight, playerRadius,
             moveDirectionToZ, moveDistance);
 
         return (canMoveToZ, moveDirectionToZ);
