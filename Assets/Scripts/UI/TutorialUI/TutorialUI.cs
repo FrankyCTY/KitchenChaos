@@ -1,18 +1,31 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class TutorialUI : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
+        Show();
+        GameManager.Instance.OnStateChanged += GameManager_OnStateChanged;
+    }
+    
+    private void GameManager_OnStateChanged(object sender, EventArgs e)
+    {
+        if (GameManager.Instance.IsCountdownToStartActive())
+        {
+            Hide();
+        }
+    }
+    
+    private void Show()
+    {
+        gameObject.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Hide()
     {
-        
+        gameObject.SetActive(false);
     }
 }

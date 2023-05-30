@@ -35,6 +35,17 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         GameInput.Instance.HandlePauseAction += Instance_HandlePauseAction;
+        GameInput.Instance.HandleInteractAction += Instance_HandleInteractAction;
+    }
+
+    private void Instance_HandleInteractAction(object sender, EventArgs e)
+    {
+        // By default the initial state is WaitingToStart, after the user pressed Interact, it should change
+        if (state == State.WaitingToStart)
+        {
+            state = State.CountdownToStart;
+            OnStateChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private void Instance_HandlePauseAction(object sender, EventArgs e)
@@ -47,13 +58,6 @@ public class GameManager : MonoBehaviour
         switch (state)
         {
             case State.WaitingToStart:
-                waitingToStartTimer -= Time.deltaTime;
-                if (waitingToStartTimer < 0f)
-                {
-                    state = State.CountdownToStart;
-                    OnStateChanged?.Invoke(this, EventArgs.Empty);
-                }
-
                 break;
             case State.CountdownToStart:
                 countdownToStartTimer -= Time.deltaTime;

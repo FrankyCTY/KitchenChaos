@@ -11,8 +11,9 @@ public class TutorialUIKeyBindingContainer : MonoBehaviour
 
     private void Start()
     {
-        UpdateVisual();
         GameInput.Instance.HandleBindingRebind += GameInput_HandleBindingRebind;
+        
+        UpdateVisual();
     }
 
     private void GameInput_HandleBindingRebind(object sender, EventArgs e)
