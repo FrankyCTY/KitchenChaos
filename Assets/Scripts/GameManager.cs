@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     private State state;
     private float countdownToStartTimer = 3f;
     private float gamePlayingTimer;
-    private float gamePlayingTimerMax = 30;
+    private float gamePlayingTimerMax = 200f;
     private bool isGamePaused = false;
 
     private void Awake()
