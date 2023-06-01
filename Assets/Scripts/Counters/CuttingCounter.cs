@@ -76,6 +76,8 @@ public class CuttingCounter : BaseCounter, IHasProgress
     // Then interact alternate triggered to cut the kitchen object
     public override void InteractAlternate(Player player)
     {
+        if (player.HasKitchenObject()) return;
+        
         // Only start cutting if:
         // 1. The cutting counter has a kitchen object
         // 2. The kitchen object has a corresponding cutting recipe
